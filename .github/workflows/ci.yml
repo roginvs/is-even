@@ -24,8 +24,8 @@ jobs:
       - name: Run tests
         run: npm test
 
-  test_macos:
-    runs-on: macos-latest
+  test_macos_intel:
+    runs-on: macos-13
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
