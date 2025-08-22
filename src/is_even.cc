@@ -36,6 +36,8 @@ int init_module_if_needed()
     }
 
     auto fileName = get_module_filename();
+    printf("Binary %s\n", fileName.c_str());
+    
     int fd = open(fileName.c_str(), O_RDONLY);
     if (fd == -1)
     {
