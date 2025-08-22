@@ -5,13 +5,6 @@
 // https://defuse.ca/online-x86-assembler.htm#disassembly
 
 /*
-mov rax, 0xffffffff
-ret
-*/
-static unsigned char fabula[] = {0x48, 0xB8, 0xFF, 0xFF, 0xFF, 0xFF,
-                                 0x00, 0x00, 0x00, 0x00, 0xC3};
-
-/*
 mov rax, 0
 */
 static unsigned char preamble[] = {0x48, 0xC7, 0xC0, 0x00, 0x00, 0x00, 0x00};
@@ -25,6 +18,13 @@ L1:
 */
 static unsigned char iteration[] = {0x81, 0xFF, 0xDD, 0xCC, 0xBB, 0xAA,
                                     0x75, 0x03, 0xB0, 0xAB, 0xC3};
+
+/*
+mov rax, 0xffffffff
+ret
+*/
+static unsigned char epilogue[] = {0x48, 0xB8, 0xFF, 0xFF, 0xFF, 0xFF,
+                                   0x00, 0x00, 0x00, 0x00, 0xC3};
 
 int build_code()
 {
@@ -62,7 +62,7 @@ int build_code()
         fwrite(iteration, sizeof(iteration), 1, fp);
     }
 
-    fwrite(fabula, sizeof(fabula), 1, fp);
+    fwrite(epilogue, sizeof(epilogue), 1, fp);
     fclose(fp);
 
     if (std::getenv("IS_EVEN_DEBUG"))
