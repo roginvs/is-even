@@ -22,7 +22,7 @@ jobs:
         run: IS_EVEN_DEBUG=1 IS_EVEN_LIGHT=1 npm install
 
       - name: Run tests
-        run: npm test
+        run: IS_EVEN_DEBUG=1 npm test
 
   test_macos_intel:
     runs-on: macos-13
@@ -39,4 +39,4 @@ jobs:
         run: IS_EVEN_DEBUG=1 IS_EVEN_LIGHT=1 npm install
 
       - name: Run tests
-        run: npm test
+        run: IS_EVEN_DEBUG=1 npm test
