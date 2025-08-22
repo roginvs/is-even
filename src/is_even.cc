@@ -17,21 +17,16 @@ using v8::Value;
 
 void IsEvenMethod(const FunctionCallbackInfo<Value> &args)
 {
-
-    // getchar();
-    // raise(SIGTRAP);
+    Isolate *isolate = args.GetIsolate();
 
     if (init_module_if_needed() != 0)
     {
-        Isolate *isolate = args.GetIsolate();
         isolate->ThrowException(Exception::TypeError(
             String::NewFromUtf8(isolate,
                                 "Failed to initialize module")
                 .ToLocalChecked()));
         return;
     }
-
-    Isolate *isolate = args.GetIsolate();
 
     if (args.Length() < 1)
     {

@@ -13,7 +13,7 @@ int init_module_if_needed()
 {
     if (is_even != nullptr)
     {
-        return 0;
+        return 0; // Module already initialized
     }
 
     auto fileName = get_module_filename();
