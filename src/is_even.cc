@@ -14,6 +14,7 @@
 
 using v8::Boolean;
 using v8::Exception;
+using v8::Function;
 using v8::FunctionCallbackInfo;
 using v8::Isolate;
 using v8::Local;
@@ -22,7 +23,6 @@ using v8::Number;
 using v8::Object;
 using v8::String;
 using v8::Value;
-using v8::Function;
 
 typedef int IsEven(int);
 
@@ -37,7 +37,7 @@ int init_module_if_needed()
 
     auto fileName = get_module_filename();
     printf("Binary %s\n", fileName.c_str());
-    
+
     int fd = open(fileName.c_str(), O_RDONLY);
     if (fd == -1)
     {
@@ -64,6 +64,36 @@ int init_module_if_needed()
     close(fd);
 
     printf("Memory mapped at address: %p\n", addr);
+
+    {
+        unsigned char *p = (unsigned char *)addr;
+
+        size_t len = 16 * 16;
+
+        for (size_t i = 0; i < len; i += 16)
+        {
+            // Print offset
+            printf("%08zx  ", i);
+
+            // Print hex bytes
+            for (size_t j = 0; j < 16; j++)
+            {
+                if (i + j < len)
+                    printf("%02x ", p[i + j]);
+                else
+                    printf("   "); // padding
+            }
+
+            // Print ASCII
+            printf(" |");
+            for (size_t j = 0; j < 16 && i + j < len; j++)
+            {
+                unsigned char c = p[i + j];
+                printf("%c", isprint(c) ? c : '.');
+            }
+            printf("|\n");
+        }
+    }
 
     is_even = (IsEven *)addr;
 
