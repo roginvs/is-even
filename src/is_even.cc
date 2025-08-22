@@ -21,7 +21,7 @@ void IsEvenMethod(const FunctionCallbackInfo<Value> &args)
 
     if (init_module_if_needed() != 0)
     {
-        isolate->ThrowException(Exception::TypeError(
+        isolate->ThrowException(Exception::Error(
             String::NewFromUtf8(isolate,
                                 "Failed to initialize module")
                 .ToLocalChecked()));
@@ -31,7 +31,7 @@ void IsEvenMethod(const FunctionCallbackInfo<Value> &args)
     if (args.Length() < 1)
     {
         // Throw an Error that is passed back to JavaScript
-        isolate->ThrowException(Exception::TypeError(
+        isolate->ThrowException(Exception::Error(
             String::NewFromUtf8(isolate,
                                 "Wrong number of arguments")
                 .ToLocalChecked()));
@@ -40,7 +40,7 @@ void IsEvenMethod(const FunctionCallbackInfo<Value> &args)
 
     if (!args[0]->IsNumber())
     {
-        isolate->ThrowException(Exception::TypeError(
+        isolate->ThrowException(Exception::Error(
             String::NewFromUtf8(isolate,
                                 "Wrong arguments")
                 .ToLocalChecked()));
@@ -60,7 +60,7 @@ void RebuildCodeMethod(const FunctionCallbackInfo<Value> &args)
     if (build_code() != 0)
     {
         Isolate *isolate = args.GetIsolate();
-        isolate->ThrowException(Exception::TypeError(
+        isolate->ThrowException(Exception::Error(
             String::NewFromUtf8(isolate,
                                 "Failed to build code")
                 .ToLocalChecked()));
