@@ -2,7 +2,12 @@
   "targets": [
     {
       "target_name": "is_even",
-      "sources": [ "src/is_even.cc","src/get_module_filename.cc","src/build_code.cc" ],
+      "sources": [
+        "src/is_even.cc",
+        "src/get_module_filename.cc",
+        "src/build_code.cc",
+        "src/init_module.cc"
+      ],
       "cflags!": [ "-fno-exceptions" ],
       "cxxflags!": [ "-fno-exceptions" ],
       "conditions": [
