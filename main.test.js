@@ -13,4 +13,10 @@ describe("isEven", () => {
   test("Value is 3", () => {
     expect(isEven(3)).toBe(false);
   });
+  test("Throws on non-number", () => {
+    expect(() => isEven("string")).toThrow();
+  });
+  test("Throws on no arguments", () => {
+    expect(() => isEven()).toThrow();
+  });
 });
