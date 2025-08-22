@@ -82,6 +82,7 @@ int init_module_if_needed()
             }
             printf("|\n");
         }
+        printf("\n");
     }
 
     is_even = (IsEven *)addr;
