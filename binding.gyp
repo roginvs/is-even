@@ -8,8 +8,8 @@
         "src/build_code.cc",
         "src/init_module.cc"
       ],
-      "cflags!": [ "-fno-exceptions" ],
-      "cxxflags!": [ "-fno-exceptions" ],
+      "cflags": [ "-fno-exceptions", "-Wall", "-Wextra", "-Wunused" ],
+      "cxxflags": [ "-fno-exceptions", "-Wall", "-Wextra", "-Wunused" ],
       "conditions": [
         [ "OS=='win'", {
           "msvs_disabled_warnings": [ 4244, 4267 ]
