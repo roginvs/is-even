@@ -56,6 +56,11 @@ console.log(isEven(7)); // false
 - **number**: `Number` — The number to check.
 - **Returns**: `Boolean` — `true` if the number is even, `false` otherwise.
 
+## TODO
+
+- Add support for arm64 platform
+- Add support for Windows
+
 ## License
 
 MIT
