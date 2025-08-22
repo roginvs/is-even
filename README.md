@@ -2,7 +2,7 @@
 
 A simple utility to check if a number is even.
 
-Works by checking every number one-by-one, i.e. like 
+Works by checking every number one-by-one, i.e. like
 
 ```javascript
 function isEven(n)) {
@@ -21,18 +21,18 @@ function isEven(n)) {
 }
 ```
 
-Implemented in assembly code so native nodejs bindings are used. Thus only Linux is supported yet.
-
+Implemented in assembly code so native nodejs bindings are used.
 
 After installation it will generate a ~45 GB file of machine code.
 (Yes, you read that right. See the meme: Heaviest objects in the universe → neutron stars, black holes, node_modules.)
 
-
-For now works only for numbers from 0 to 0xFFFFFFFF. Passing anything else is **undefined behavior**.
-
-
 Inspired by [4 billion if statements](https://andreasjhkarlsson.github.io/jekyll/update/2023/12/27/4-billion-if-statements.html)
 
+## Limitations
+
+- For now works only for numbers from 0 to 0xFFFFFFFF. Passing anything else is **undefined behavior**.
+- Only Linux x64 and Intel Mac are supported
+- Might be slow (dozens of seconds) on big numbers
 
 ## Installation
 
@@ -43,7 +43,7 @@ npm install https://github.com/roginvs/is-even
 ## Usage
 
 ```js
-const isEven = require('is-even');
+const isEven = require("is-even");
 
 console.log(isEven(4)); // true
 console.log(isEven(7)); // false
@@ -55,7 +55,6 @@ console.log(isEven(7)); // false
 
 - **number**: `Number` — The number to check.
 - **Returns**: `Boolean` — `true` if the number is even, `false` otherwise.
-
 
 ## License
 
