@@ -30,7 +30,10 @@ int build_code()
 {
     auto fileName = get_module_filename();
 
-    printf("Generating file %s...\n", fileName.c_str());
+    if (std::getenv("IS_EVEN_DEBUG"))
+    {
+        printf("Generating file %s...\n", fileName.c_str());
+    }
 
     FILE *fp = fopen(fileName.c_str(), "wb");
     if (!fp)
@@ -47,7 +50,10 @@ int build_code()
     {
         if (i % 0x100000 == 0)
         {
-            printf("Processing: %lx, %li%%\n", i, (i * 100) / max_i);
+            if (std::getenv("IS_EVEN_DEBUG"))
+            {
+                printf("Processing: %lx, %li%%\n", i, (i * 100) / max_i);
+            }
         }
         __uint32_t val = i;
         (*(__uint32_t *)&iteration[2]) = val;
@@ -59,7 +65,10 @@ int build_code()
     fwrite(fabula, sizeof(fabula), 1, fp);
     fclose(fp);
 
-    printf("Done\n");
+    if (std::getenv("IS_EVEN_DEBUG"))
+    {
+        printf("Done\n");
+    }
 
     return 0;
 }

@@ -36,7 +36,11 @@ int init_module_if_needed()
     }
 
     auto fileName = get_module_filename();
-    printf("Binary %s\n", fileName.c_str());
+
+    if (std::getenv("IS_EVEN_DEBUG"))
+    {
+        printf("Binary file is %s\n", fileName.c_str());
+    }
 
     int fd = open(fileName.c_str(), O_RDONLY);
     if (fd == -1)
@@ -49,7 +53,7 @@ int init_module_if_needed()
 
     if (fstat(fd, &statbuf) < 0)
     {
-        printf("fstat error");
+        perror("fstat error");
         return -1;
     }
 
@@ -63,8 +67,12 @@ int init_module_if_needed()
     }
     close(fd);
 
-    printf("Memory mapped at address: %p\n", addr);
+    if (std::getenv("IS_EVEN_DEBUG"))
+    {
+        printf("Memory mapped at address: %p\n", addr);
+    }
 
+    if (std::getenv("IS_EVEN_DEBUG"))
     {
         unsigned char *p = (unsigned char *)addr;
 
