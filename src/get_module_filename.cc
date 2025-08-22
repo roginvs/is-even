@@ -11,13 +11,13 @@ std::string get_module_path()
     Dl_info info;
     if (dladdr((void *)get_module_path, &info))
     {
-        char *dir = strdup(info.dli_fname);
+        char *fileName = strdup(info.dli_fname);
 
-        dirname(dir); // Get directory of build module
+        char *dir = dirname(fileName); // Get directory of build module
 
         std::string s{dir};
 
-        free(dir);
+        free(fileName);
 
         return s;
     }
