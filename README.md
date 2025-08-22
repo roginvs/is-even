@@ -23,7 +23,7 @@ function isEven(n)) {
 
 Implemented in assembly code so native nodejs bindings are used.
 
-After installation it will generate a ~45 GB file of machine code.
+After installation it will generate a ~45 GB file of machine code which will be placed inside node_modules.
 (Yes, you read that right. See the meme: Heaviest objects in the universe → neutron stars, black holes, node_modules.)
 
 Inspired by [4 billion if statements](https://andreasjhkarlsson.github.io/jekyll/update/2023/12/27/4-billion-if-statements.html)
