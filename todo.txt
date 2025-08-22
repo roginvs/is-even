@@ -1,0 +1,7 @@
+- add readme
+  - is even
+  - link to habr
+  - asm examples
+  - 45gb, node_modules, img with meme
+
+- add CI build and test

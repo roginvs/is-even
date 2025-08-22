@@ -1,0 +1,20 @@
+{
+  "name": "is-even",
+  "version": "1.0.0",
+  "main": "build/Release/is_even.node",
+  "scripts": {
+    "install": "node-gyp rebuild",
+    "test": "jest",
+    "postinstall": "node -e \"require('./')._build_code()\""
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "gypfile": true,
+  "dependencies": {
+    "node-addon-api": "^8.0.0"
+  },
+  "devDependencies": {
+    "jest": "^30.0.5"
+  }
+}
