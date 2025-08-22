@@ -1,14 +1,5 @@
 #include <node.h>
 
-#include <iostream>
-#include <unistd.h>
-#include <limits.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
 #include "./build_code.h"
 #include "./init_module.h"
 

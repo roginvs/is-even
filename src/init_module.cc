@@ -1,9 +1,6 @@
 #include "init_module.h"
 #include "get_module_filename.h"
 
-#include <iostream>
-#include <unistd.h>
-#include <limits.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <sys/mman.h>
