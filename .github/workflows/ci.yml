@@ -40,3 +40,20 @@ jobs:
 
       - name: Run tests
         run: IS_EVEN_DEBUG=1 npm test
+
+  test_macos_arm64:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install & build
+        run: IS_EVEN_DEBUG=1 IS_EVEN_LIGHT=1 npm install
+
+      - name: Run tests
+        run: IS_EVEN_DEBUG=1 npm test
