@@ -2,6 +2,8 @@
 #include "get_module_filename.h"
 #include <iostream>
 
+#if defined(__x86_64__) || defined(_M_X64)
+
 // https://defuse.ca/online-x86-assembler.htm#disassembly
 
 /*
@@ -25,6 +27,12 @@ ret
 */
 static unsigned char epilogue[] = {0x48, 0xB8, 0xFF, 0xFF, 0xFF, 0xFF,
                                    0x00, 0x00, 0x00, 0x00, 0xC3};
+
+#elif defined(__aarch64__) || defined(_M_ARM64)
+#error "AArch64 architecture is not supported yet"
+#else
+#error "Unsupported architecture"
+#endif
 
 int build_code()
 {
