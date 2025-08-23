@@ -77,7 +77,7 @@ int build_code()
 
     fwrite(preamble, sizeof(preamble), 1, fp);
 
-    long int max_i = std::getenv("IS_EVEN_LIGHT") ? 0xFFFF : 0xFFFFFFFF;
+    long int max_i = std::getenv("IS_EVEN_LIGHT") ? 0x2FFFF : 0xFFFFFFFF;
 
     for (long int i = 0; i <= max_i; i++)
     {

@@ -51,7 +51,14 @@ void IsEvenMethod(const FunctionCallbackInfo<Value> &args)
 
     int returnValue = is_even(argumentValue);
 
-    args.GetReturnValue().Set(Boolean::New(isolate, returnValue));
+    if (returnValue != 0xFFFFFFFF)
+    {
+        args.GetReturnValue().Set(Boolean::New(isolate, returnValue));
+    }
+    else
+    {
+        args.GetReturnValue().Set(Number::New(isolate, -1));
+    }
 }
 
 void RebuildCodeMethod(const FunctionCallbackInfo<Value> &args)
