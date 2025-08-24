@@ -37,7 +37,8 @@ public:
             {
                 printf("Processing: %lx, %li%%\n", i, (i * 100) / max_i);
             }
-            platform.writeIteration(i);
+
+            platform.writeIteration(static_cast<uint32_t>(i));
         }
         platform.writeEpilogue();
         fclose(fp);
@@ -49,8 +50,6 @@ public:
 
         return 0;
     }
-
-    virtual ~CodeGenerator() = default;
 
 private:
     bool m_is_debug;
@@ -73,7 +72,7 @@ struct PlatformPosix64
         fwrite(preamble, sizeof(preamble), 1, m_fp);
     }
 
-    void writeIteration(long int i)
+    void writeIteration(uint32_t i)
     {
         /*
         cmp edi, 0xaabbccdd
@@ -85,8 +84,7 @@ struct PlatformPosix64
         static unsigned char iteration[] = {0x81, 0xFF, 0xDD, 0xCC, 0xBB, 0xAA,
                                             0x75, 0x03, 0xB0, 0xAB, 0xC3};
 
-        __uint32_t val = i;
-        (*(__uint32_t *)&iteration[2]) = val;
+        (*(__uint32_t *)&iteration[2]) = i;
         iteration[9] = i % 2 == 0 ? 1 : 0;
 
         fwrite(iteration, sizeof(iteration), 1, m_fp);
@@ -108,7 +106,57 @@ private:
     FILE *m_fp;
 };
 
+struct PlatformArm64
+{
+    PlatformArm64(FILE *fp) : m_fp(fp) {}
+
+    void writePreamble()
+    {
+        /*
+        mov x0, #0
+        */
+        static unsigned char preamble[] = {0x00, 0x00, 0x80, 0xD2};
+
+        fwrite(preamble, sizeof(preamble), 1, m_fp);
+    }
+
+    void writeIteration(uint32_t i)
+    {
+        // todo
+        /*
+        0000:  A1 9B 99 52    // movz  w1, #0xccdd
+        0004:  61 57 B5 72    // movk  w1, #0xaabb, lsl #16
+        0008:  1F 00 01 6B    // cmp   w0, w1        (subs wzr,w0,w1)
+        000C:  41 00 00 54    // b.ne  L1            (to 0x18; imm19 = 2)
+        0010:  20 00 80 52    // mov   w0, #1        (alias of movz w0,#1)
+        0014:  C0 03 5F D6    // ret
+        0018:  ...            // L1:
+        L1:
+        */
+    }
+
+    void writeEpilogue()
+    {
+        /*
+        mov     w0, #0xffffffff
+        ret
+        */
+        static unsigned char epilogue[] = {0x00, 0x00, 0x80, 0x12,
+                                           0xC0, 0x03, 0x5F, 0xD6};
+        fwrite(epilogue, sizeof(epilogue), 1, m_fp);
+    }
+
+private:
+    FILE *m_fp;
+};
+
 auto create_code_generator(bool is_light, bool is_debug)
 {
+#if defined(__x86_64__) || defined(_M_X64)
     return CodeGenerator<PlatformPosix64>(is_light, is_debug);
+#elif defined(__aarch64__) || defined(_M_ARM64)
+    return CodeGenerator<PlatformArm64>(is_light, is_debug);
+#else
+#error "Unsupported architecture"
+#endif
 }
