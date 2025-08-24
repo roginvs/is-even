@@ -113,12 +113,7 @@ struct PlatformArm64
 
     void writePreamble()
     {
-        /*
-        mov x0, #0
-        */
-        static unsigned char preamble[] = {0x00, 0x00, 0x80, 0xD2};
-
-        fwrite(preamble, sizeof(preamble), 1, m_fp);
+        // No prologue needed
     }
 
     void writeIteration(uint32_t i)
@@ -128,16 +123,16 @@ struct PlatformArm64
         0004:  61 57 B5 72    // movk  w1, #0xaabb, lsl #16
         0008:  1F 00 01 6B    // cmp   w0, w1        (subs wzr,w0,w1)
         000C:  41 00 00 54    // b.ne  L1            (to 0x18; imm19 = 2)
-        0010:  20 00 80 52    // mov   w0, #1        (alias of movz w0,#1)
+        0010:  20 00 80 52    // movz   w0, #1        (alias of movz w0,#1)
         0014:  C0 03 5F D6    // ret
         0018:  ...            // L1:
         L1:
         */
-        write(PlatformArm64::movz_w1(i & 0xFFFF));
+        write(PlatformArm64::movz_x(PlatformArm64::XReg::X1, i & 0xFFFF));
         write(PlatformArm64::movk_w1_lsl16((i >> 16) & 0xFFFF));
         write(PlatformArm64::cmp_w0_w1());
         write(PlatformArm64::b_ne_8());
-        write(PlatformArm64::mov_w0(i % 2));
+        write(PlatformArm64::movz_x(PlatformArm64::XReg::X0, i % 2));
         write(PlatformArm64::ret());
     }
 
@@ -161,7 +156,16 @@ private:
         fwrite(data.data(), sizeof(std::uint8_t), N, m_fp);
     }
 
-    static constexpr std::array<std::uint8_t, 4> ret()
+    enum class XReg : std::uint8_t
+    {
+        X0 = 0,
+        X1 = 1,
+        X2 = 2,
+
+    };
+
+    static constexpr std::array<std::uint8_t, 4>
+    ret()
     {
         return {0xC0, 0x03, 0x5F, 0xD6};
     }
@@ -189,18 +193,17 @@ private:
         return {0x1F, 0x00, 0x01, 0x6B};
     }
 
-    // movz  w1, #0xccdd
-    static constexpr std::array<std::uint8_t, 4> movz_w1(uint16_t imm16)
+    static constexpr std::array<std::uint8_t, 4>
+    movz_x(XReg rd, std::uint16_t imm16)
     {
         const std::uint32_t word =
-            0x52800000u | (std::uint32_t(imm16) << 5) | 0x1u; // Rd=1
+            0xD2800000u | (std::uint32_t(imm16) << 5) | (static_cast<std::uint8_t>(rd) & 0x1F);
 
-        // little-endian byte order
         return {
-            static_cast<std::uint8_t>(word & 0xFF),
-            static_cast<std::uint8_t>((word >> 8) & 0xFF),
-            static_cast<std::uint8_t>((word >> 16) & 0xFF),
-            static_cast<std::uint8_t>((word >> 24) & 0xFF),
+            std::uint8_t(word & 0xFF),
+            std::uint8_t((word >> 8) & 0xFF),
+            std::uint8_t((word >> 16) & 0xFF),
+            std::uint8_t((word >> 24) & 0xFF),
         };
     }
 
@@ -235,12 +238,19 @@ constexpr bool arr_eq(const std::array<T, N> &a, const std::array<T, N> &b)
 struct PlatformArm64Test
 {
     static_assert(arr_eq(
-        PlatformArm64::movz_w1(0xccdd),
-        std::array<std::uint8_t, 4>{0xA1, 0x9B, 0x99, 0x52}));
+        PlatformArm64::movz_x(PlatformArm64::XReg::X1, 0xccdd),
+        std::array<std::uint8_t, 4>{0xA1, 0x9B, 0x99, 0xD2}));
 
     static_assert(arr_eq(
-        PlatformArm64::movz_w1(0xaabb),
-        std::array<std::uint8_t, 4>{0x61, 0x57, 0x95, 0x52}));
+        PlatformArm64::movz_x(PlatformArm64::XReg::X1, 0xaabb),
+        std::array<std::uint8_t, 4>{0x61, 0x57, 0x95, 0xD2}));
+
+    static_assert(arr_eq(
+        PlatformArm64::movz_x(PlatformArm64::XReg::X0, 0),
+        std::array<std::uint8_t, 4>{0x00, 0x00, 0x80, 0xD2}));
+    static_assert(arr_eq(
+        PlatformArm64::movz_x(PlatformArm64::XReg::X0, 1),
+        std::array<std::uint8_t, 4>{0x20, 0x00, 0x80, 0xD2}));
 
     static_assert(arr_eq(
         PlatformArm64::movk_w1_lsl16(0xaabb),
