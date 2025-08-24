@@ -32,6 +32,7 @@ public:
 
         long int max_i = m_is_light ? 0x2FFFF : 0xFFFFFFFF;
 
+        /*
         for (long int i = 0; i <= max_i; i++)
         {
             if (i % 0x100000 == 0 && m_is_debug)
@@ -41,6 +42,11 @@ public:
 
             platform.writeIteration(static_cast<uint32_t>(i));
         }
+            */
+
+        platform.writeIteration(0x15432);
+        platform.writeIteration(0x12345);
+
         platform.writeEpilogue();
         fclose(fp);
 
