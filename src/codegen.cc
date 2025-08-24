@@ -151,35 +151,59 @@ struct PlatformArm64
 private:
     FILE *m_fp;
 
-    // movz  w1, #0xccdd
-    static constexpr std::array<std::uint8_t, 4> movz_w1(uint16_t value)
+    static constexpr std::array<std::uint8_t, 4> mov_w0(uint16_t imm16)
     {
-        // TODO
-        if (value == 0xccdd)
-        {
-            return {0xA1, 0x9B, 0x99, 0x52};
-        }
-        else if (value == 0xaabb)
-        {
-            return {0x61, 0x57, 0x95, 0x52};
-        }
-        else
-        {
-            return {0x00, 0x00, 0x00, 0x00};
-        }
+        const std::uint32_t word =
+            0x52800000u | (std::uint32_t(imm16) << 5) | 0u; // Rd = 0
+
+        return {
+            static_cast<std::uint8_t>(word & 0xFF),
+            static_cast<std::uint8_t>((word >> 8) & 0xFF),
+            static_cast<std::uint8_t>((word >> 16) & 0xFF),
+            static_cast<std::uint8_t>((word >> 24) & 0xFF),
+        };
+    }
+
+    static constexpr std::array<std::uint8_t, 4> b_ne_8()
+    {
+        return {0x41, 0x00, 0x00, 0x54};
+    }
+
+    static constexpr std::array<std::uint8_t, 4> cmp_w0_w1()
+    {
+        return {0x1F, 0x00, 0x01, 0x6B};
+    }
+
+    // movz  w1, #0xccdd
+    static constexpr std::array<std::uint8_t, 4> movz_w1(uint16_t imm16)
+    {
+        const std::uint32_t word =
+            0x52800000u | (std::uint32_t(imm16) << 5) | 0x1u; // Rd=1
+
+        // little-endian byte order
+        return {
+            static_cast<std::uint8_t>(word & 0xFF),
+            static_cast<std::uint8_t>((word >> 8) & 0xFF),
+            static_cast<std::uint8_t>((word >> 16) & 0xFF),
+            static_cast<std::uint8_t>((word >> 24) & 0xFF),
+        };
     }
 
     //  movk w1, #0xaabb, lsl #16
-    static constexpr std::array<std::uint8_t, 4> movk_w1_lsl16(uint16_t value)
+    static constexpr std::array<std::uint8_t, 4> movk_w1_lsl16(uint16_t imm16)
     {
-        if (value == 0xaabb)
-        {
-            return {0x61, 0x57, 0xb5, 0x72};
-        }
-        else
-        {
-            return {0x00, 0x00, 0x00, 0x00};
-        }
+        const std::uint32_t word =
+            0x72A00000u |                 // MOVK base (W-form)
+            (1u << 21) |                  // hw = 1 → LSL #16
+            (std::uint32_t(imm16) << 5) | // imm16 into [20:5]
+            0x1u;                         // Rd = w1
+
+        return {
+            static_cast<std::uint8_t>(word & 0xFF),
+            static_cast<std::uint8_t>((word >> 8) & 0xFF),
+            static_cast<std::uint8_t>((word >> 16) & 0xFF),
+            static_cast<std::uint8_t>((word >> 24) & 0xFF),
+        };
     }
 
     friend struct PlatformArm64Test;
@@ -202,6 +226,18 @@ struct PlatformArm64Test
     static_assert(arr_eq(
         PlatformArm64::movz_w1(0xaabb),
         std::array<std::uint8_t, 4>{0x61, 0x57, 0x95, 0x52}));
+
+    static_assert(arr_eq(
+        PlatformArm64::movk_w1_lsl16(0xaabb),
+        std::array<std::uint8_t, 4>{0x61, 0x57, 0xb5, 0x72}));
+
+    static_assert(arr_eq(
+        PlatformArm64::mov_w0(0),
+        std::array<std::uint8_t, 4>{0x00, 0x00, 0x80, 0x52}));
+
+    static_assert(arr_eq(
+        PlatformArm64::mov_w0(1),
+        std::array<std::uint8_t, 4>{0x20, 0x00, 0x80, 0x52}));
 };
 
 auto create_code_generator(bool is_light, bool is_debug)
