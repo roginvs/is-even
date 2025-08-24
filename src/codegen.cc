@@ -133,8 +133,8 @@ struct PlatformArm64
         0018:  ...            // L1:
         L1:
         */
-        auto t = PlatformArm64::set_w1_low16(i);
-        fwrite(t.data(), t.size(), 1, m_fp);
+        // auto t = PlatformArm64::set_w1_low16(i);
+        // fwrite(t.data(), t.size(), 1, m_fp);
     }
 
     void writeEpilogue()
@@ -151,9 +151,35 @@ struct PlatformArm64
 private:
     FILE *m_fp;
 
-    static constexpr std::array<std::uint8_t, 4> set_w1_low16(uint32_t value)
+    // movz  w1, #0xccdd
+    static constexpr std::array<std::uint8_t, 4> movz_w1(uint16_t value)
     {
-        return {0xA1, 0x9B, 0x99, 0x52};
+        // TODO
+        if (value == 0xccdd)
+        {
+            return {0xA1, 0x9B, 0x99, 0x52};
+        }
+        else if (value == 0xaabb)
+        {
+            return {0x61, 0x57, 0x95, 0x52};
+        }
+        else
+        {
+            return {0x00, 0x00, 0x00, 0x00};
+        }
+    }
+
+    //  movk w1, #0xaabb, lsl #16
+    static constexpr std::array<std::uint8_t, 4> movk_w1_lsl16(uint16_t value)
+    {
+        if (value == 0xaabb)
+        {
+            return {0x61, 0x57, 0xb5, 0x72};
+        }
+        else
+        {
+            return {0x00, 0x00, 0x00, 0x00};
+        }
     }
 
     friend struct PlatformArm64Test;
@@ -170,8 +196,12 @@ constexpr bool arr_eq(const std::array<T, N> &a, const std::array<T, N> &b)
 struct PlatformArm64Test
 {
     static_assert(arr_eq(
-        PlatformArm64::set_w1_low16(0xaabbccdd),
+        PlatformArm64::movz_w1(0xccdd),
         std::array<std::uint8_t, 4>{0xA1, 0x9B, 0x99, 0x52}));
+
+    static_assert(arr_eq(
+        PlatformArm64::movz_w1(0xaabb),
+        std::array<std::uint8_t, 4>{0x61, 0x57, 0x95, 0x52}));
 };
 
 auto create_code_generator(bool is_light, bool is_debug)
