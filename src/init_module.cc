@@ -61,8 +61,11 @@ int init_module_if_needed()
 
         for (size_t i = 0; i < len; i += 16)
         {
-            // Print offset
-            printf("%08zx  ", i);
+            if (false)
+            {
+                // Print offset
+                printf("%08zx  ", i);
+            }
 
             // Print hex bytes
             for (size_t j = 0; j < 16; j++)
@@ -74,13 +77,17 @@ int init_module_if_needed()
             }
 
             // Print ASCII
-            printf(" |");
-            for (size_t j = 0; j < 16 && i + j < len; j++)
+            if (false)
             {
-                unsigned char c = p[i + j];
-                printf("%c", isprint(c) ? c : '.');
+                printf(" |");
+                for (size_t j = 0; j < 16 && i + j < len; j++)
+                {
+                    unsigned char c = p[i + j];
+                    printf("%c", isprint(c) ? c : '.');
+                }
+                printf("|");
             }
-            printf("|\n");
+            printf("\n");
         }
         printf("\n");
     }
