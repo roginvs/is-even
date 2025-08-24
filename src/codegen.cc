@@ -32,8 +32,7 @@ public:
 
         long int max_i = m_is_light ? 0x2FFFF : 0xFFFFFFFF;
 
-        /*
-        for (long int i = 0; i <= max_i; i++)
+                for (long int i = 0; i <= max_i; i++)
         {
             if (i % 0x100000 == 0 && m_is_debug)
             {
@@ -42,10 +41,8 @@ public:
 
             platform.writeIteration(static_cast<uint32_t>(i));
         }
-            */
-        // TODO Revert me
-        platform.writeIteration(0x15432);
-        platform.writeIteration(0x12345);
+        // platform.writeIteration(0x15432);
+        // platform.writeIteration(0x12345);
 
         platform.writeEpilogue();
         fclose(fp);
@@ -138,9 +135,7 @@ struct PlatformArm64
         write(PlatformArm64::movk_w1_lsl16((i >> 16) & 0xFFFF));
         write(PlatformArm64::cmp_w0_w1());
         write(PlatformArm64::b_ne_8());
-        // TODO Revert me
-        write(PlatformArm64::movz_x(PlatformArm64::XReg::X0, (i % 2 == 0 ? 2000 : 1000) + i % 256));
-        // write(PlatformArm64::movz_x(PlatformArm64::XReg::X0, i % 2 ? 1 : 0));
+        write(PlatformArm64::movz_x(PlatformArm64::XReg::X0, i % 2 ? 1 : 0));
         write(PlatformArm64::ret());
     }
 
