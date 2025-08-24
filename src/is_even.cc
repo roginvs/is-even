@@ -51,6 +51,11 @@ void IsEvenMethod(const FunctionCallbackInfo<Value> &args)
 
     int returnValue = is_even(argumentValue);
 
+    if (std::getenv("IS_EVEN_DEBUG"))
+    {
+        printf("asm is_even(%d) = %d\n", argumentValue, returnValue);
+    }
+
     if (returnValue != 0xFFFFFFFF)
     {
         args.GetReturnValue().Set(Boolean::New(isolate, returnValue));
