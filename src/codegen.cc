@@ -122,7 +122,6 @@ struct PlatformArm64
 
     void writeIteration(uint32_t i)
     {
-        // todo
         /*
         0000:  A1 9B 99 52    // movz  w1, #0xccdd
         0004:  61 57 B5 72    // movk  w1, #0xaabb, lsl #16
@@ -133,8 +132,12 @@ struct PlatformArm64
         0018:  ...            // L1:
         L1:
         */
-        // auto t = PlatformArm64::set_w1_low16(i);
-        // fwrite(t.data(), t.size(), 1, m_fp);
+        write(PlatformArm64::movz_w1(i & 0xFFFF));
+        write(PlatformArm64::movk_w1_lsl16((i >> 16) & 0xFFFF));
+        write(PlatformArm64::cmp_w0_w1());
+        write(PlatformArm64::b_ne_8());
+        write(PlatformArm64::mov_w0(i % 2));
+        write(PlatformArm64::ret());
     }
 
     void writeEpilogue()
@@ -150,6 +153,17 @@ struct PlatformArm64
 
 private:
     FILE *m_fp;
+
+    template <std::size_t N>
+    void write(const std::array<std::uint8_t, N> &data)
+    {
+        fwrite(data.data(), sizeof(std::uint8_t), N, m_fp);
+    }
+
+    static constexpr std::array<std::uint8_t, 4> ret()
+    {
+        return {0xC0, 0x03, 0x5F, 0xD6};
+    }
 
     static constexpr std::array<std::uint8_t, 4> mov_w0(uint16_t imm16)
     {
