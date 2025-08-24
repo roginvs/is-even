@@ -1,5 +1,6 @@
 #include <iostream>
 #include <array>
+#include <cstdint>
 
 template <typename Platform>
 struct CodeGenerator
