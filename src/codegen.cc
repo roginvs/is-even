@@ -144,11 +144,15 @@ struct PlatformArm64
 
     void writeEpilogue()
     {
+        // TODO: Use funcs
+
         /*
+        mov x0, 0
         mov     w0, #0xffffffff
         ret
         */
-        static unsigned char epilogue[] = {0x00, 0x00, 0x80, 0x12,
+        static unsigned char epilogue[] = {0x00, 0x00, 0x80, 0xD2,
+                                           0x00, 0x00, 0x80, 0x12,
                                            0xC0, 0x03, 0x5F, 0xD6};
         fwrite(epilogue, sizeof(epilogue), 1, m_fp);
     }
