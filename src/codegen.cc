@@ -160,6 +160,7 @@ struct PlatformArm64
 private:
     FILE *m_fp;
 
+    // TODO: Maybe make it in a base class (generator) and use CRTP?
     template <std::size_t N>
     void write(const std::array<std::uint8_t, N> &data)
     {
