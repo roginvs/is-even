@@ -1,5 +1,5 @@
 #include <iostream>
-#include <concepts>
+#include <array>
 
 template <typename Platform>
 struct CodeGenerator
@@ -133,6 +133,8 @@ struct PlatformArm64
         0018:  ...            // L1:
         L1:
         */
+        auto t = PlatformArm64::set_w1_low16(i);
+        fwrite(t.data(), t.size(), 1, m_fp);
     }
 
     void writeEpilogue()
@@ -148,6 +150,28 @@ struct PlatformArm64
 
 private:
     FILE *m_fp;
+
+    static constexpr std::array<std::uint8_t, 4> set_w1_low16(uint32_t value)
+    {
+        return {0xA1, 0x9B, 0x99, 0x52};
+    }
+
+    friend struct PlatformArm64Test;
+};
+
+template <class T, std::size_t N>
+constexpr bool arr_eq(const std::array<T, N> &a, const std::array<T, N> &b)
+{
+    for (std::size_t i = 0; i < N; ++i)
+        if (a[i] != b[i])
+            return false;
+    return true;
+}
+struct PlatformArm64Test
+{
+    static_assert(arr_eq(
+        PlatformArm64::set_w1_low16(0xaabbccdd),
+        std::array<std::uint8_t, 4>{0xA1, 0x9B, 0x99, 0x52}));
 };
 
 auto create_code_generator(bool is_light, bool is_debug)
