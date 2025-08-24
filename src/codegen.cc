@@ -135,7 +135,7 @@ struct PlatformArm64
         write(PlatformArm64::movk_w1_lsl16((i >> 16) & 0xFFFF));
         write(PlatformArm64::cmp_w0_w1());
         write(PlatformArm64::b_ne_8());
-        write(PlatformArm64::movz_x(PlatformArm64::XReg::X0, i % 2 ? 1 : 0));
+        write(PlatformArm64::movz_x(PlatformArm64::XReg::X0, i % 2 == 0 ? 1 : 0));
         write(PlatformArm64::ret());
     }
 
