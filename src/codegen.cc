@@ -258,7 +258,15 @@ struct PlatformArm64Test
 auto create_code_generator(bool is_light, bool is_debug)
 {
 #if defined(__x86_64__) || defined(_M_X64)
+
+#if defined(__linux__) || defined(__APPLE__)
     return CodeGenerator<PlatformPosix64>(is_light, is_debug);
+#elif defined(_WIN64)
+#error "Windows is not supported yet"
+#else
+#error "Unknown platform"
+#endif
+
 #elif defined(__aarch64__) || defined(_M_ARM64)
     return CodeGenerator<PlatformArm64>(is_light, is_debug);
 #else
