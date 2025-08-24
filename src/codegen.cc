@@ -139,7 +139,8 @@ struct PlatformArm64
         write(PlatformArm64::cmp_w0_w1());
         write(PlatformArm64::b_ne_8());
         // TODO Revert me
-        write(PlatformArm64::movz_x(PlatformArm64::XReg::X0, i % 2 == 0 ? 2000000 : 1000000));
+        write(PlatformArm64::movz_x(PlatformArm64::XReg::X0, (i % 2 == 0 ? 2000 : 1000) + i % 256));
+        // write(PlatformArm64::movz_x(PlatformArm64::XReg::X0, i % 2 ? 1 : 0));
         write(PlatformArm64::ret());
     }
 
