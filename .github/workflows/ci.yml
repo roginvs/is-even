@@ -19,10 +19,16 @@ jobs:
           node-version: 22
 
       - name: Install & build
-        run: IS_EVEN_DEBUG=1 IS_EVEN_LIGHT=1 npm install
+        env:
+          IS_EVEN_DEBUG: 1
+          IS_EVEN_LIGHT: 1
+        run: npm install
 
       - name: Run tests
-        run: IS_EVEN_DEBUG=1 IS_EVEN_LIGHT=1 npm test
+        env:
+          IS_EVEN_DEBUG: 1
+          IS_EVEN_LIGHT: 1
+        run: npm test
 
   test_macos_intel:
     runs-on: macos-13
@@ -36,10 +42,16 @@ jobs:
           node-version: 22
 
       - name: Install & build
-        run: IS_EVEN_DEBUG=1 IS_EVEN_LIGHT=1 npm install
+        env:
+          IS_EVEN_DEBUG: 1
+          IS_EVEN_LIGHT: 1
+        run: npm install
 
       - name: Run tests
-        run: IS_EVEN_DEBUG=1 IS_EVEN_LIGHT=1 npm test
+        env:
+          IS_EVEN_DEBUG: 1
+          IS_EVEN_LIGHT: 1
+        run: npm test
 
   test_macos_arm64:
     runs-on: macos-latest
@@ -53,7 +65,13 @@ jobs:
           node-version: 22
 
       - name: Install & build
-        run: IS_EVEN_DEBUG=1 IS_EVEN_LIGHT=1 npm install
+        env:
+          IS_EVEN_DEBUG: 1
+          IS_EVEN_LIGHT: 1
+        run: npm install
 
       - name: Run tests
-        run: IS_EVEN_DEBUG=1 IS_EVEN_LIGHT=1 npm test
+        env:
+          IS_EVEN_DEBUG: 1
+          IS_EVEN_LIGHT: 1
+        run: npm test
