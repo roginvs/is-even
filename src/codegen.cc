@@ -193,7 +193,8 @@ private:
 
     static constexpr std::array<std::uint8_t, 4> b_ne_8()
     {
-        return {0x41, 0x00, 0x00, 0x54};
+        // return {0x41, 0x00, 0x00, 0x54};
+        return {0x61, 0x00, 0x00, 0x54};
     }
 
     static constexpr std::array<std::uint8_t, 4> cmp_w0_w1()
