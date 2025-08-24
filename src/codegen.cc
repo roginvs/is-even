@@ -32,7 +32,7 @@ public:
 
         long int max_i = m_is_light ? 0x2FFFF : 0xFFFFFFFF;
 
-                for (long int i = 0; i <= max_i; i++)
+        for (long int i = 0; i <= max_i; i++)
         {
             if (i % 0x100000 == 0 && m_is_debug)
             {
@@ -263,6 +263,14 @@ struct PlatformArm64Test
     static_assert(arr_eq(
         PlatformArm64::movk_w1_lsl16(0xaabb),
         std::array<std::uint8_t, 4>{0x61, 0x57, 0xb5, 0x72}));
+
+    static_assert(arr_eq(
+        PlatformArm64::movk_w1_lsl16(0x0000),
+        std::array<std::uint8_t, 4>{0x01, 0x00, 0xA0, 0x72}));
+
+    static_assert(arr_eq(
+        PlatformArm64::movk_w1_lsl16(0x0001),
+        std::array<std::uint8_t, 4>{0x21, 0x00, 0xA0, 0x72}));
 
     static_assert(arr_eq(
         PlatformArm64::mov_w0(0),
