@@ -23,7 +23,7 @@ function isEven(n)) {
 
 Implemented in assembly code so native nodejs bindings are used.
 
-After installation it will generate a ~45 GB file (about 100 GB on arm64) of machine code which will be placed inside node_modules.
+After installation (and first time require) it will generate a ~45 GB file (about 100 GB on arm64) of machine code which will be placed inside node_modules.
 (Yes, you read that right. See the meme: Heaviest objects in the universe → neutron stars, black holes, node_modules.)
 
 Supports basic platforms: Linux/Mac/Windows on amd64/arm64 cpu.
