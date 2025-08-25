@@ -91,7 +91,7 @@ auto create_code_generator(bool is_light, bool is_debug)
 #if defined(__linux__) || defined(__APPLE__)
     return CodeGenerator<PlatformPosix64>(is_light, is_debug);
 #elif defined(_WIN64)
-#error "Windows is not supported yet"
+    return CodeGenerator<PlatformWindows64>(is_light, is_debug);
 #else
 #error "Unknown platform"
 #endif
