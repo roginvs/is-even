@@ -27,8 +27,8 @@ struct PlatformPosix64
         ret
         L1:
         */
-        static std::array<uint8_t, 11> iteration = {0x81, 0xFF, 0xDD, 0xCC, 0xBB, 0xAA,
-                                                    0x75, 0x03, 0xB0, 0xAB, 0xC3};
+        static uint8_t iteration[] = {0x81, 0xFF, 0xDD, 0xCC, 0xBB, 0xAA,
+                                      0x75, 0x03, 0xB0, 0xAB, 0xC3};
 
         (*(__uint32_t *)&iteration[2]) = i;
         iteration[9] = i % 2 == 0 ? 1 : 0;
@@ -42,8 +42,8 @@ struct PlatformPosix64
         mov rax, 0xffffffff
         ret
         */
-        static std::array<uint8_t, 11> epilogue = {0x48, 0xB8, 0xFF, 0xFF, 0xFF, 0xFF,
-                                                   0x00, 0x00, 0x00, 0x00, 0xC3};
+        static constexpr uint8_t epilogue[] = {0x48, 0xB8, 0xFF, 0xFF, 0xFF, 0xFF,
+                                               0x00, 0x00, 0x00, 0x00, 0xC3};
 
         write(epilogue);
     }
