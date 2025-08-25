@@ -59,8 +59,7 @@ console.log(isEven(7)); // false
 
 ## TODO
 
-- Add support for arm64 platform
-- Add support for Windows
+- Add support for risc-v
 
 ## License
 
