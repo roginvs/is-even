@@ -46,23 +46,21 @@ public:
 
         platform.writePreamble();
 
-        long int max_i = m_is_light ? 0x2FFFF : 0xFFFFFFFF;
-
-        for (long int i = 0; i <= max_i; i++)
+        for (unsigned long int i = 0; i <= 0xFFFFFFFF; i++)
         {
             if (i % 0x100000 == 0 && m_is_debug)
             {
-                printf("Processing: %lx, %li%%\n", i, (i * 100) / max_i);
+                printf("Processing: %lx, %li%%\n", i, (i * 100) / 0xFFFFFFFF);
             }
 
             platform.writeIteration(static_cast<uint32_t>(i));
+
+            if (m_is_light && i > 0x2FFFF)
+            {
+                break;
+            }
         }
-        if (m_is_light)
-        {
-            platform.writeIteration(0xFFFFFFFF);
-        }
-        // platform.writeIteration(0x15432);
-        // platform.writeIteration(0x12345);
+        platform.writeIteration(0xFFFFFFFF);
 
         platform.writeEpilogue();
         fclose(fp);
