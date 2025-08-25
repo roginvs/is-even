@@ -53,6 +53,7 @@ console.log(isEven(7)); // false
 ## TODO
 
 - Add support for risc-v
+- Use config.h instead of constantly reading env
 
 ## License
 
