@@ -39,8 +39,8 @@ public:
             return -1;
         }
 
-        FileWriter writer = FileWriter(fp);
-        Platform<FileWriter> platform = Platform{writer};
+        auto writer = FileWriter(fp);
+        auto platform = Platform{writer};
 
         platform.writePreamble();
 
