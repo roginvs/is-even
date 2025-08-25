@@ -1,7 +1,5 @@
 #include <iostream>
-#include <unistd.h>
-#include <stdio.h>
-
+#include <filesystem>
 #include "codegen.h"
 #include "codegen.file.cc"
 #include "module.getFileName.h"
@@ -20,7 +18,7 @@ int generate_code_file()
 
     auto fileName = get_module_filename();
 
-    if (access(fileName.c_str(), F_OK) == 0)
+    if (std::filesystem::exists(fileName))
     {
         if (is_debug)
         {
