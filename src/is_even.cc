@@ -47,7 +47,7 @@ void IsEvenMethod(const FunctionCallbackInfo<Value> &args)
         return;
     }
 
-    int argumentValue = args[0].As<Number>()->Value();
+    long int argumentValue = args[0].As<Number>()->Value();
 
     int returnValue = is_even(argumentValue);
 
