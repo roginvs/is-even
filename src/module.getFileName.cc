@@ -30,6 +30,10 @@ std::string get_module_path()
         std::terminate();
     }
 }
+std::string get_module_filename()
+{
+    return get_module_path() + "/is_even.bin";
+}
 
 #elif defined(_WIN64)
 
@@ -92,11 +96,11 @@ std::string get_module_path()
     return full.substr(0, pos);
 }
 
+std::string get_module_filename()
+{
+    return get_module_path() + "\\is_even.bin";
+}
+
 #else
 #error "Unknown platform"
 #endif
-
-std::string get_module_filename()
-{
-    return get_module_path() + "/is_even.bin";
-}
