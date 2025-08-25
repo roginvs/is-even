@@ -50,17 +50,11 @@ console.log(isEven(4)); // true
 console.log(isEven(7)); // false
 ```
 
-## API
-
-### `isEven(number)`
-
-- **number**: `Number` — The number to check.
-- **Returns**: `Boolean` — `true` if the number is even, `false` otherwise.
-
 ## TODO
 
 - Add support for risc-v
 - Maybe place is_even.bin into common shared folder, i.e. `~/.cache/...` (generate with prefix, then rename to be atomic)
+- Or maybe init binary on import (same with rename trick)?
 
 ## License
 
