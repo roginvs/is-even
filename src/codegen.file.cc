@@ -7,10 +7,16 @@ class FileWriter
 {
 public:
     FileWriter(FILE *fp) : m_fp(fp) {}
+
     template <std::size_t N>
-    void inline operator()(const std::array<uint8_t, N> &data)
+    void operator()(const std::array<uint8_t, N> &data)
     {
         fwrite(data.data(), sizeof(uint8_t), N, m_fp);
+    }
+    template <std::size_t N>
+    void operator()(const uint8_t (&data)[N])
+    {
+        std::fwrite(data, sizeof(uint8_t), N, m_fp);
     }
 
 private:

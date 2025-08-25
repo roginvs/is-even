@@ -13,7 +13,7 @@ struct PlatformPosix64
         /*
         mov rax, 0
         */
-        static std::array<uint8_t, 7> preamble = {0x48, 0xC7, 0xC0, 0x00, 0x00, 0x00, 0x00};
+        static constexpr uint8_t preamble[] = {0x48, 0xC7, 0xC0, 0x00, 0x00, 0x00, 0x00};
 
         write(preamble);
     }
