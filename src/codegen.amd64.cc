@@ -1,10 +1,16 @@
 #include <array>
 #include <cstdint>
 
-template <class Writer>
-struct PlatformPosix64
+enum class Kind
 {
-    explicit PlatformPosix64(Writer &w) : write(w) {}
+    Windows,
+    Posix
+};
+
+template <Kind K, class Writer>
+struct PlatformCommon64
+{
+    explicit PlatformCommon64(Writer &w) : write(w) {}
 
     // https://defuse.ca/online-x86-assembler.htm#disassembly
 
@@ -51,3 +57,9 @@ struct PlatformPosix64
 private:
     Writer &write;
 };
+
+template <class Writer>
+using PlatformWindows64 = PlatformCommon64<Kind::Windows, Writer>;
+
+template <class Writer>
+using PlatformPosix64 = PlatformCommon64<Kind::Posix, Writer>;

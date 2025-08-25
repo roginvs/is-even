@@ -48,7 +48,7 @@ public:
         }
 
         auto writer = FileWriter(fp);
-        auto platform = Platform{writer};
+        Platform<FileWriter> platform{writer};
 
         platform.writePreamble();
 
