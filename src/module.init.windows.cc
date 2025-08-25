@@ -25,7 +25,7 @@ static void print_last_error(const char *where)
     }
 }
 
-int init_module_if_needed()
+int init_module()
 {
     if (is_even != nullptr)
     {
