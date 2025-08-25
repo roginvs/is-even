@@ -7,100 +7,16 @@ on:
     branches: [master]
 
 jobs:
-  test_linux:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install & build
-        env:
-          IS_EVEN_DEBUG: 1
-          IS_EVEN_LIGHT: 1
-        run: npm install
-
-      - name: Run tests
-        env:
-          IS_EVEN_DEBUG: 1
-          IS_EVEN_LIGHT: 1
-        run: npm test
-
-  test_windows:
-    runs-on: windows-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install & build
-        env:
-          IS_EVEN_DEBUG: 1
-          IS_EVEN_LIGHT: 1
-        run: npm install
-
-      - name: Run tests
-        env:
-          IS_EVEN_DEBUG: 1
-          IS_EVEN_LIGHT: 1
-        run: npm test
-
-  test_macos_intel:
-    runs-on: macos-13
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install & build
-        env:
-          IS_EVEN_DEBUG: 1
-          IS_EVEN_LIGHT: 1
-        run: npm install
-
-      - name: Run tests
-        env:
-          IS_EVEN_DEBUG: 1
-          IS_EVEN_LIGHT: 1
-        run: npm test
-
-  test_macos_arm64:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install & build
-        env:
-          IS_EVEN_DEBUG: 1
-          IS_EVEN_LIGHT: 1
-        run: npm install
-
-      - name: Run tests
-        env:
-          IS_EVEN_DEBUG: 1
-          IS_EVEN_LIGHT: 1
-        run: npm test
-
-  test_linux_arm64:
-    runs-on: ubuntu-24.04-arm
+  test:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - macos-13
+          - ubuntu-24.04-arm
+          - windows-latest
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
