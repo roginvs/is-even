@@ -11,16 +11,25 @@ public:
     template <std::size_t N>
     void operator()(const std::array<uint8_t, N> &data)
     {
-        fwrite(data.data(), sizeof(uint8_t), N, m_fp);
+        if (fwrite(data.data(), sizeof(uint8_t), N, m_fp) != N)
+        {
+            is_error = true;
+        }
     }
     template <std::size_t N>
     void operator()(const uint8_t (&data)[N])
     {
-        std::fwrite(data, sizeof(uint8_t), N, m_fp);
+        if (std::fwrite(data, sizeof(uint8_t), N, m_fp) != N)
+        {
+            is_error = true;
+        }
     }
+
+    bool has_error() const { return is_error; }
 
 private:
     FILE *m_fp;
+    bool is_error = false;
 };
 
 template <template <class> class Platform>
@@ -69,7 +78,20 @@ public:
         platform.writeIteration(0xFFFFFFFF);
 
         platform.writeEpilogue();
-        fclose(fp);
+        if (fclose(fp) != 0)
+        {
+            perror("fclose");
+            return -1;
+        }
+
+        if (writer.has_error())
+        {
+            if (m_is_debug)
+            {
+                printf("Occured an error writing to file %s\n", filename);
+            }
+            return -1;
+        }
 
         if (m_is_debug)
         {

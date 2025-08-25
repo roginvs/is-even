@@ -4,8 +4,7 @@
   "main": "build/Release/is_even.node",
   "scripts": {
     "install": "node-gyp rebuild",
-    "test": "jest",
-    "postinstall": "node -e \"require('./')._build_code()\""
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",

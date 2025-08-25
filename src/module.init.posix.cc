@@ -6,7 +6,7 @@
 #include "module.getFileName.h"
 #include "module.init.printhex.h"
 
-int init_module_if_needed()
+int init_module()
 {
     if (is_even != nullptr)
     {
@@ -41,7 +41,7 @@ int init_module_if_needed()
     {
         perror("mmap");
         close(fd);
-        return 1;
+        return -1;
     }
     close(fd);
 
@@ -57,5 +57,5 @@ int init_module_if_needed()
         print_func_hex();
     }
 
-    return 0;
+    return 1;
 }

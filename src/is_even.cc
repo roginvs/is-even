@@ -19,15 +19,6 @@ void IsEvenMethod(const FunctionCallbackInfo<Value> &args)
 {
     Isolate *isolate = args.GetIsolate();
 
-    if (init_module_if_needed() != 0)
-    {
-        isolate->ThrowException(Exception::Error(
-            String::NewFromUtf8(isolate,
-                                "Failed to initialize module")
-                .ToLocalChecked()));
-        return;
-    }
-
     if (args.Length() < 1)
     {
         // Throw an Error that is passed back to JavaScript
@@ -69,16 +60,6 @@ void IsEvenMethod(const FunctionCallbackInfo<Value> &args)
 void RebuildCodeMethod(const FunctionCallbackInfo<Value> &args)
 {
 
-    if (generate_code_file() != 0)
-    {
-        Isolate *isolate = args.GetIsolate();
-        isolate->ThrowException(Exception::Error(
-            String::NewFromUtf8(isolate,
-                                "Failed to build code")
-                .ToLocalChecked()));
-        return;
-    }
-
     args.GetReturnValue().Set(0);
 }
 
@@ -87,13 +68,32 @@ void Initialize(Local<Object> exports, Local<Object> module)
     Isolate *isolate = exports->GetIsolate();
     auto ctx = isolate->GetCurrentContext();
 
+    const auto generateStatus = generate_code_file();
+    if (generateStatus < 0)
+    {
+        isolate->ThrowException(Exception::Error(
+            String::NewFromUtf8(isolate,
+                                "Failed to build code")
+                .ToLocalChecked()));
+        return;
+    }
+
+    if (init_module() < 0)
+    {
+        isolate->ThrowException(Exception::Error(
+            String::NewFromUtf8(isolate,
+                                "Failed to initialize module")
+                .ToLocalChecked()));
+        return;
+    }
+
     Local<Function> isEvenFn =
         v8::Function::New(ctx, IsEvenMethod).ToLocalChecked();
 
     // Attach the extra method onto the function
     isEvenFn->Set(ctx,
-                  v8::String::NewFromUtf8(isolate, "_build_code").ToLocalChecked(),
-                  v8::Function::New(ctx, RebuildCodeMethod).ToLocalChecked())
+                  v8::String::NewFromUtf8(isolate, "_code_was_built").ToLocalChecked(),
+                  v8::Boolean::New(isolate, generateStatus == 1))
         .Check();
 
     // module.exports = isEvenFn

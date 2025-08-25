@@ -113,5 +113,5 @@ int init_module_if_needed()
         print_func_hex();
     }
 
-    return 0;
+    return 1;
 }
