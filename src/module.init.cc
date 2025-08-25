@@ -9,6 +9,45 @@
 
 IsEven *is_even = nullptr;
 
+static void print_func_hex()
+{
+    unsigned char *p = (unsigned char *)is_even;
+
+    size_t len = 16 * 16;
+
+    for (size_t i = 0; i < len; i += 16)
+    {
+        if (false)
+        {
+            // Print offset
+            printf("%08zx  ", i);
+        }
+
+        // Print hex bytes
+        for (size_t j = 0; j < 16; j++)
+        {
+            if (i + j < len)
+                printf("%02x ", p[i + j]);
+            else
+                printf("   "); // padding
+        }
+
+        // Print ASCII
+        if (false)
+        {
+            printf(" |");
+            for (size_t j = 0; j < 16 && i + j < len; j++)
+            {
+                unsigned char c = p[i + j];
+                printf("%c", isprint(c) ? c : '.');
+            }
+            printf("|");
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
 int init_module_if_needed()
 {
     if (is_even != nullptr)
@@ -53,46 +92,12 @@ int init_module_if_needed()
         printf("Memory mapped at address: %p\n", addr);
     }
 
+    is_even = (IsEven *)addr;
+
     if (std::getenv("IS_EVEN_DEBUG"))
     {
-        unsigned char *p = (unsigned char *)addr;
-
-        size_t len = 16 * 16;
-
-        for (size_t i = 0; i < len; i += 16)
-        {
-            if (false)
-            {
-                // Print offset
-                printf("%08zx  ", i);
-            }
-
-            // Print hex bytes
-            for (size_t j = 0; j < 16; j++)
-            {
-                if (i + j < len)
-                    printf("%02x ", p[i + j]);
-                else
-                    printf("   "); // padding
-            }
-
-            // Print ASCII
-            if (false)
-            {
-                printf(" |");
-                for (size_t j = 0; j < 16 && i + j < len; j++)
-                {
-                    unsigned char c = p[i + j];
-                    printf("%c", isprint(c) ? c : '.');
-                }
-                printf("|");
-            }
-            printf("\n");
-        }
-        printf("\n");
+        print_func_hex();
     }
-
-    is_even = (IsEven *)addr;
 
     return 0;
 }
