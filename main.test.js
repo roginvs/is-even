@@ -34,8 +34,8 @@ describe("isEven", () => {
   test("Value is 0xddccbbaa", () => {
     expect(isEven(0xddccbbaa)).toBe(process.env.IS_EVEN_LIGHT ? -1 : true);
   });
-  test("Value is 0xffffffffe", () => {
-    expect(isEven(0xffffffffe)).toBe(process.env.IS_EVEN_LIGHT ? -1 : true);
+  test("Value is 0xfffffffe", () => {
+    expect(isEven(0xfffffffe)).toBe(process.env.IS_EVEN_LIGHT ? -1 : true);
   });
   test("Value is 0xffffffff", () => {
     expect(isEven(0xffffffff)).toBe(false);
