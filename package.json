@@ -10,9 +10,7 @@
   "license": "ISC",
   "description": "",
   "gypfile": true,
-  "dependencies": {
-    "node-addon-api": "^8.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "jest": "^30.0.5"
   }
