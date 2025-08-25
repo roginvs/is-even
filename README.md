@@ -53,8 +53,6 @@ console.log(isEven(7)); // false
 ## TODO
 
 - Add support for risc-v
-- Maybe place is_even.bin into common shared folder, i.e. `~/.cache/...` (generate with prefix, then rename to be atomic)
-- Or maybe init binary on import (same with rename trick)?
 
 ## License
 
