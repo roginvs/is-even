@@ -1,4 +1,4 @@
-#include "get_module_filename.h"
+#include "module.getFileName.h"
 
 #include <dlfcn.h>
 #include <string.h>

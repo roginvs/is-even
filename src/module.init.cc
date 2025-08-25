@@ -1,5 +1,5 @@
-#include "init_module.h"
-#include "get_module_filename.h"
+#include "module.init.h"
+#include "module.getFileName.h"
 
 #include <fcntl.h>
 #include <stdio.h>

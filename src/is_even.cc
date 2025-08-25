@@ -1,7 +1,7 @@
 #include <node.h>
 
-#include "./build_code.h"
-#include "./init_module.h"
+#include "./codegen.h"
+#include "./module.init.h"
 
 using v8::Boolean;
 using v8::Exception;
@@ -69,7 +69,7 @@ void IsEvenMethod(const FunctionCallbackInfo<Value> &args)
 void RebuildCodeMethod(const FunctionCallbackInfo<Value> &args)
 {
 
-    if (build_code() != 0)
+    if (generate_code_file() != 0)
     {
         Isolate *isolate = args.GetIsolate();
         isolate->ThrowException(Exception::Error(

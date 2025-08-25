@@ -4,9 +4,9 @@
       "target_name": "is_even",
       "sources": [
         "src/is_even.cc",
-        "src/get_module_filename.cc",
-        "src/build_code.cc",
-        "src/init_module.cc"
+        "src/module.getFileName.cc",
+        "src/codegen.cc",
+        "src/module.init.cc"
       ],
       "cflags": [ "-fno-exceptions", "-Wall", "-Wextra", "-Wunused" ],
       "cxxflags": [ "-fno-exceptions", "-Wall", "-Wextra", "-Wunused" ],
