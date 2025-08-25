@@ -2,7 +2,20 @@
 #include <array>
 #include <cstdint>
 
-template <typename Platform>
+class FileWriter
+{
+public:
+    FileWriter(FILE *fp) : m_fp(fp) {}
+    template <std::size_t N>
+    void operator()(const std::array<uint8_t, N> &data)
+    {
+        fwrite(data.data(), sizeof(uint8_t), N, m_fp);
+    }
+
+private:
+    FILE *m_fp;
+};
+template <template <class> class Platform>
 struct CodeGenerator
 {
 
@@ -26,7 +39,8 @@ public:
             return -1;
         }
 
-        auto platform = Platform(fp);
+        FileWriter writer = FileWriter(fp);
+        Platform<FileWriter> platform = Platform{writer};
 
         platform.writePreamble();
 
@@ -64,9 +78,10 @@ private:
     bool m_is_light;
 };
 
+template <class Writer>
 struct PlatformPosix64
 {
-    PlatformPosix64(FILE *fp) : m_fp(fp) {}
+    explicit PlatformPosix64(Writer &w) : write(w) {}
 
     // https://defuse.ca/online-x86-assembler.htm#disassembly
 
@@ -75,9 +90,9 @@ struct PlatformPosix64
         /*
         mov rax, 0
         */
-        static unsigned char preamble[] = {0x48, 0xC7, 0xC0, 0x00, 0x00, 0x00, 0x00};
+        static std::array<uint8_t, 7> preamble = {0x48, 0xC7, 0xC0, 0x00, 0x00, 0x00, 0x00};
 
-        fwrite(preamble, sizeof(preamble), 1, m_fp);
+        write(preamble);
     }
 
     void writeIteration(uint32_t i)
@@ -89,13 +104,13 @@ struct PlatformPosix64
         ret
         L1:
         */
-        static unsigned char iteration[] = {0x81, 0xFF, 0xDD, 0xCC, 0xBB, 0xAA,
-                                            0x75, 0x03, 0xB0, 0xAB, 0xC3};
+        static std::array<uint8_t, 11> iteration = {0x81, 0xFF, 0xDD, 0xCC, 0xBB, 0xAA,
+                                                    0x75, 0x03, 0xB0, 0xAB, 0xC3};
 
         (*(__uint32_t *)&iteration[2]) = i;
         iteration[9] = i % 2 == 0 ? 1 : 0;
 
-        fwrite(iteration, sizeof(iteration), 1, m_fp);
+        write(iteration);
     }
 
     void writeEpilogue()
@@ -104,70 +119,19 @@ struct PlatformPosix64
         mov rax, 0xffffffff
         ret
         */
-        static unsigned char epilogue[] = {0x48, 0xB8, 0xFF, 0xFF, 0xFF, 0xFF,
-                                           0x00, 0x00, 0x00, 0x00, 0xC3};
+        static std::array<uint8_t, 11> epilogue = {0x48, 0xB8, 0xFF, 0xFF, 0xFF, 0xFF,
+                                                   0x00, 0x00, 0x00, 0x00, 0xC3};
 
-        fwrite(epilogue, sizeof(epilogue), 1, m_fp);
-    }
-
-private:
-    FILE *m_fp;
-};
-
-struct PlatformArm64
-{
-    PlatformArm64(FILE *fp) : m_fp(fp) {}
-
-    void writePreamble()
-    {
-        // No prologue needed
-    }
-
-    void writeIteration(uint32_t i)
-    {
-        /*
-        0000:  A1 9B 99 52    // movz  w1, #0xccdd
-        0004:  61 57 B5 72    // movk  w1, #0xaabb, lsl #16
-        0008:  1F 00 01 6B    // cmp   w0, w1        (subs wzr,w0,w1)
-        000C:  41 00 00 54    // b.ne  L1            (to 0x18; imm19 = 2)
-        0010:  20 00 80 52    // movz   w0, #1        (alias of movz w0,#1)
-        0014:  C0 03 5F D6    // ret
-        0018:  ...            // L1:
-        L1:
-        */
-        write(PlatformArm64::movz_x(PlatformArm64::XReg::X1, i & 0xFFFF));
-        write(PlatformArm64::movk_w1_lsl16((i >> 16) & 0xFFFF));
-        write(PlatformArm64::cmp_w0_w1());
-        write(PlatformArm64::b_ne_8());
-        write(PlatformArm64::movz_x(PlatformArm64::XReg::X0, i % 2 == 0 ? 1 : 0));
-        write(PlatformArm64::ret());
-    }
-
-    void writeEpilogue()
-    {
-        // TODO: Use funcs
-
-        /*
-        mov x0, 0
-        mov     w0, #0xffffffff
-        ret
-        */
-        std::array<std::uint8_t, 12> epilogue = {0x00, 0x00, 0x80, 0xD2,
-                                                 0x00, 0x00, 0x80, 0x12,
-                                                 0xC0, 0x03, 0x5F, 0xD6};
         write(epilogue);
     }
 
 private:
-    FILE *m_fp;
+    Writer &write;
+};
 
-    // TODO: Maybe make it in a base class (generator) and use CRTP?
-    template <std::size_t N>
-    void write(const std::array<std::uint8_t, N> &data)
-    {
-        fwrite(data.data(), sizeof(std::uint8_t), N, m_fp);
-    }
-
+class Arm64
+{
+public:
     enum class XReg : std::uint8_t
     {
         X0 = 0,
@@ -235,8 +199,6 @@ private:
             static_cast<std::uint8_t>((word >> 24) & 0xFF),
         };
     }
-
-    friend struct PlatformArm64Test;
 };
 
 template <class T, std::size_t N>
@@ -247,42 +209,93 @@ constexpr bool arr_eq(const std::array<T, N> &a, const std::array<T, N> &b)
             return false;
     return true;
 }
-struct PlatformArm64Test
+struct Arm64Test
 {
     static_assert(arr_eq(
-        PlatformArm64::movz_x(PlatformArm64::XReg::X1, 0xccdd),
+        Arm64::movz_x(Arm64::XReg::X1, 0xccdd),
         std::array<std::uint8_t, 4>{0xA1, 0x9B, 0x99, 0xD2}));
 
     static_assert(arr_eq(
-        PlatformArm64::movz_x(PlatformArm64::XReg::X1, 0xaabb),
+        Arm64::movz_x(Arm64::XReg::X1, 0xaabb),
         std::array<std::uint8_t, 4>{0x61, 0x57, 0x95, 0xD2}));
 
     static_assert(arr_eq(
-        PlatformArm64::movz_x(PlatformArm64::XReg::X0, 0),
+        Arm64::movz_x(Arm64::XReg::X0, 0),
         std::array<std::uint8_t, 4>{0x00, 0x00, 0x80, 0xD2}));
     static_assert(arr_eq(
-        PlatformArm64::movz_x(PlatformArm64::XReg::X0, 1),
+        Arm64::movz_x(Arm64::XReg::X0, 1),
         std::array<std::uint8_t, 4>{0x20, 0x00, 0x80, 0xD2}));
 
     static_assert(arr_eq(
-        PlatformArm64::movk_w1_lsl16(0xaabb),
+        Arm64::movk_w1_lsl16(0xaabb),
         std::array<std::uint8_t, 4>{0x61, 0x57, 0xb5, 0x72}));
 
     static_assert(arr_eq(
-        PlatformArm64::movk_w1_lsl16(0x0000),
+        Arm64::movk_w1_lsl16(0x0000),
         std::array<std::uint8_t, 4>{0x01, 0x00, 0xA0, 0x72}));
 
     static_assert(arr_eq(
-        PlatformArm64::movk_w1_lsl16(0x0001),
+        Arm64::movk_w1_lsl16(0x0001),
         std::array<std::uint8_t, 4>{0x21, 0x00, 0xA0, 0x72}));
 
     static_assert(arr_eq(
-        PlatformArm64::mov_w0(0),
+        Arm64::mov_w0(0),
         std::array<std::uint8_t, 4>{0x00, 0x00, 0x80, 0x52}));
 
     static_assert(arr_eq(
-        PlatformArm64::mov_w0(1),
+        Arm64::mov_w0(1),
         std::array<std::uint8_t, 4>{0x20, 0x00, 0x80, 0x52}));
+};
+
+template <class Writer>
+struct PlatformArm64
+{
+    explicit PlatformArm64(Writer &w) : write(w) {}
+
+    void writePreamble()
+    {
+        // No prologue needed
+    }
+
+    void writeIteration(uint32_t i)
+    {
+        /*
+        0000:  A1 9B 99 52    // movz  w1, #0xccdd
+        0004:  61 57 B5 72    // movk  w1, #0xaabb, lsl #16
+        0008:  1F 00 01 6B    // cmp   w0, w1        (subs wzr,w0,w1)
+        000C:  41 00 00 54    // b.ne  L1            (to 0x18; imm19 = 2)
+        0010:  20 00 80 52    // movz   w0, #1        (alias of movz w0,#1)
+        0014:  C0 03 5F D6    // ret
+        0018:  ...            // L1:
+        L1:
+        */
+        write(Arm64::movz_x(Arm64::XReg::X1, i & 0xFFFF));
+        write(Arm64::movk_w1_lsl16((i >> 16) & 0xFFFF));
+        write(Arm64::cmp_w0_w1());
+        write(Arm64::b_ne_8());
+        write(Arm64::movz_x(Arm64::XReg::X0, i % 2 == 0 ? 1 : 0));
+        write(Arm64::ret());
+    }
+
+    void writeEpilogue()
+    {
+        // TODO: Use funcs
+
+        /*
+        mov x0, 0
+        mov     w0, #0xffffffff
+        ret
+        */
+        std::array<std::uint8_t, 12> epilogue = {0x00, 0x00, 0x80, 0xD2,
+                                                 0x00, 0x00, 0x80, 0x12,
+                                                 0xC0, 0x03, 0x5F, 0xD6};
+        write(epilogue);
+    }
+
+private:
+    Writer &write;
+
+    friend struct PlatformArm64Test;
 };
 
 auto create_code_generator(bool is_light, bool is_debug)
