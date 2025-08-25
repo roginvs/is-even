@@ -28,7 +28,7 @@ struct PlatformCommon64
     {
         static auto iteration = PlatformCommon64::make_iteration();
 
-        (*(__uint32_t *)&iteration[2]) = i;
+        (*(uint32_t *)&iteration[2]) = i;
         iteration[9] = i % 2 == 0 ? 1 : 0;
 
         write(iteration);
