@@ -152,10 +152,10 @@ struct PlatformArm64
         mov     w0, #0xffffffff
         ret
         */
-        static unsigned char epilogue[] = {0x00, 0x00, 0x80, 0xD2,
-                                           0x00, 0x00, 0x80, 0x12,
-                                           0xC0, 0x03, 0x5F, 0xD6};
-        fwrite(epilogue, sizeof(epilogue), 1, m_fp);
+        std::array<std::uint8_t, 12> epilogue = {0x00, 0x00, 0x80, 0xD2,
+                                                 0x00, 0x00, 0x80, 0x12,
+                                                 0xC0, 0x03, 0x5F, 0xD6};
+        write(epilogue);
     }
 
 private:
