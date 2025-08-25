@@ -23,15 +23,16 @@ function isEven(n)) {
 
 Implemented in assembly code so native nodejs bindings are used.
 
-After installation it will generate a ~45 GB file of machine code which will be placed inside node_modules.
+After installation it will generate a ~45 GB file (about 100 GB on arm64) of machine code which will be placed inside node_modules.
 (Yes, you read that right. See the meme: Heaviest objects in the universe → neutron stars, black holes, node_modules.)
+
+Supports basic platforms: Linux/Mac/Windows on amd64/arm64 cpu.
 
 Inspired by [4 billion if statements](https://andreasjhkarlsson.github.io/jekyll/update/2023/12/27/4-billion-if-statements.html)
 
 ## Limitations
 
 - For now works only for numbers from 0 to 0xFFFFFFFF. Passing anything else is **undefined behavior**.
-- Only Linux x64 and Intel Mac are supported
 - Might be slow (dozens of seconds) on big numbers
 
 ## Installation
