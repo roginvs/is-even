@@ -41,6 +41,10 @@ public:
 
             platform.writeIteration(static_cast<uint32_t>(i));
         }
+        if (m_is_light)
+        {
+            platform.writeIteration(0xFFFFFFFF);
+        }
         // platform.writeIteration(0x15432);
         // platform.writeIteration(0x12345);
 
