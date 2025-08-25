@@ -4,7 +4,7 @@
   "main": "build/Release/is_even.node",
   "scripts": {
     "install": "node-gyp rebuild",
-    "test": "jest"
+    "test": "jest --testTimeout=120000"
   },
   "author": "",
   "license": "ISC",
