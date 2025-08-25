@@ -26,15 +26,7 @@ struct PlatformCommon64
 
     void writeIteration(uint32_t i)
     {
-        /*
-        cmp edi, 0xaabbccdd
-        jnz L1
-        mov al, 0xab
-        ret
-        L1:
-        */
-        static uint8_t iteration[] = {0x81, 0xFF, 0xDD, 0xCC, 0xBB, 0xAA,
-                                      0x75, 0x03, 0xB0, 0xAB, 0xC3};
+        static auto iteration = PlatformCommon64::make_iteration();
 
         (*(__uint32_t *)&iteration[2]) = i;
         iteration[9] = i % 2 == 0 ? 1 : 0;
@@ -56,6 +48,27 @@ struct PlatformCommon64
 
 private:
     Writer &write;
+
+    static constexpr std::array<std::uint8_t, 11> make_iteration()
+    {
+        if constexpr (K == Kind::Posix)
+        {
+            // cmp edi, 0xaabbccdd ; jnz +3 ; mov al,0xab ; ret
+            return {0x81, 0xFF, 0xDD, 0xCC, 0xBB, 0xAA,
+                    0x75, 0x03, 0xB0, 0xAB, 0xC3};
+        }
+        else if constexpr (K == Kind::Windows)
+        {
+            // cmp ecx, 0xaabbccdd ; jnz +3 ; mov al,0xab ; ret
+            return {0x81, 0xF9, 0xDD, 0xCC, 0xBB, 0xAA,
+                    0x75, 0x03, 0xB0, 0xAB, 0xC3};
+        }
+        else
+        {
+            static_assert(K == Kind::Windows || K == Kind::Posix,
+                          "Unhandled Kind in make_iteration()");
+        }
+    }
 };
 
 template <class Writer>
