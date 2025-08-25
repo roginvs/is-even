@@ -10,7 +10,9 @@ IsEven *is_even = nullptr;
 #include "module.init.posix.cc"
 
 #elif defined(_WIN64)
-#error "Windows is not supported yet"
+
+#include "module.init.windows.cc"
+
 #else
 #error "Unknown platform"
 #endif
