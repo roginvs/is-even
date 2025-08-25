@@ -49,11 +49,11 @@ void IsEvenMethod(const FunctionCallbackInfo<Value> &args)
 
     long int argumentValue = args[0].As<Number>()->Value();
 
-    int returnValue = is_even(argumentValue);
+    uint32_t returnValue = is_even(argumentValue);
 
     if (std::getenv("IS_EVEN_DEBUG"))
     {
-        printf("asm is_even(%u = 0x%x) = %u = 0x%x\n\n", argumentValue, argumentValue, returnValue, returnValue);
+        printf("asm is_even(%lu = 0x%lx) = %u = 0x%x\n\n", argumentValue, argumentValue, returnValue, returnValue);
     }
 
     if (returnValue != 0xFFFFFFFF)
